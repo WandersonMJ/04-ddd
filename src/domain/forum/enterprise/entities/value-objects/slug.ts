@@ -1,5 +1,5 @@
 export class Slug {
-  public value: string
+  public readonly value: string
 
   private constructor(value: string) {
     this.value = value

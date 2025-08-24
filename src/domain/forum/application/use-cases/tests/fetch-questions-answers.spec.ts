@@ -1,58 +1,78 @@
 import { InMemoryAnswersRepository } from 'test/respositories/in-memory-answers-repository.ts'
+import { InMemoryQuestionsRepository } from 'test/respositories/in-memory-questions-repository.ts'
 import { FetchQuestionsAnswersUseCase } from '../fetch-question-answers.ts'
 import { makeAnswer } from 'test/factories/make-answer.ts'
-import { UniqueEntityID } from '@/core/entities/unique-entity-id.ts'
+import { makeQuestion } from 'test/factories/make-question.ts'
 
+let inMemoryQuestionsRepository: InMemoryQuestionsRepository
 let inMemoryAnswersRepository: InMemoryAnswersRepository
 let sut: FetchQuestionsAnswersUseCase
 
 describe('Fetch Questions Answers', () => {
   beforeEach(() => {
+    inMemoryQuestionsRepository = new InMemoryQuestionsRepository()
     inMemoryAnswersRepository = new InMemoryAnswersRepository()
-    sut = new FetchQuestionsAnswersUseCase(inMemoryAnswersRepository)
+    sut = new FetchQuestionsAnswersUseCase(
+      inMemoryQuestionsRepository,
+      inMemoryAnswersRepository,
+    )
   })
 
   it('should be able to fetch question answers', async () => {
+    const question = makeQuestion()
+
+    await inMemoryQuestionsRepository.create(question)
+
     await inMemoryAnswersRepository.create(
       makeAnswer({
-        questionId: new UniqueEntityID('question-1'),
+        questionId: question.id,
       }),
     )
 
     await inMemoryAnswersRepository.create(
       makeAnswer({
-        questionId: new UniqueEntityID('question-1'),
+        questionId: question.id,
       }),
     )
 
     await inMemoryAnswersRepository.create(
       makeAnswer({
-        questionId: new UniqueEntityID('question-1'),
+        questionId: question.id,
       }),
     )
 
-    const { answers } = await sut.execute({
-      questionId: 'question-1',
+    const result = await sut.execute({
+      questionId: question.id.toString(),
       page: 1,
     })
 
-    expect(answers).toHaveLength(3)
+    expect(result.isRight()).toBe(true)
+    if (result.isRight()) {
+      expect(result.value.answers).toHaveLength(3)
+    }
   })
 
   it('should be able to fetch paginated recent questions', async () => {
+    const question = makeQuestion()
+
+    await inMemoryQuestionsRepository.create(question)
+
     for (let i = 1; i <= 22; i++) {
       await inMemoryAnswersRepository.create(
         makeAnswer({
-          questionId: new UniqueEntityID('question-1'),
+          questionId: question.id,
         }),
       )
     }
 
-    const { answers } = await sut.execute({
-      questionId: 'question-1',
+    const result = await sut.execute({
+      questionId: question.id.toString(),
       page: 2,
     })
 
-    expect(answers).toHaveLength(2)
+    expect(result.isRight()).toBe(true)
+    if (result.isRight()) {
+      expect(result.value.answers).toHaveLength(2)
+    }
   })
 })

@@ -4,6 +4,7 @@ import { InMemoryAnswersRepository } from 'test/respositories/in-memory-answers-
 import { makeQuestion } from 'test/factories/make-question.ts'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id.ts'
 import { makeAnswer } from 'test/factories/make-answer.ts'
+import { NotAllowedError } from '../errors/not-allowed-error.ts'
 
 let inMemoryAnswersRepository: InMemoryAnswersRepository
 let inMemoryQuestionsRepository: InMemoryQuestionsRepository
@@ -33,12 +34,15 @@ describe('Choose Question Best Answer', () => {
 
     await inMemoryAnswersRepository.create(newAnswer)
 
-    const { question } = await sut.execute({
+    const result = await sut.execute({
       authorId: newQuestion.authorId.toString(),
       answerId: newAnswer.id.toString(),
     })
 
-    expect(question.bestAnswerId).toEqual(newAnswer.id)
+    expect(result.isRight()).toBe(true)
+    if (result.isRight()) {
+      expect(result.value?.question.bestAnswerId).toEqual(newAnswer.id)
+    }
   })
 
   it('should not be able to choose another user question best answer', async () => {
@@ -55,11 +59,12 @@ describe('Choose Question Best Answer', () => {
 
     await inMemoryAnswersRepository.create(newAnswer)
 
-    await expect(() =>
-      sut.execute({
-        authorId: 'author-2',
-        answerId: newAnswer.id.toString(),
-      }),
-    ).rejects.toBeInstanceOf(Error)
+    const result = await sut.execute({
+      authorId: 'author-2',
+      answerId: newAnswer.id.toString(),
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(NotAllowedError)
   })
 })

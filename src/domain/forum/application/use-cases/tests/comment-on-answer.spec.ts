@@ -22,15 +22,17 @@ describe('Comment On Answer', () => {
 
     await inMemoryAnswersRepository.create(newAnswer)
 
-    const { answerComment } = await sut.execute({
+    const result = await sut.execute({
       answerId: newAnswer.id.toString(),
       authorId: '1',
       content: 'Nova pergunta',
     })
 
-    expect(answerComment.id).toBeTruthy()
-    expect(inMemoryAnswerCommentsRepository.items[0]?.id).toEqual(
-      answerComment.id,
-    )
+    expect(result.isRight()).toBe(true)
+    if (result.isRight()) {
+      expect(inMemoryAnswerCommentsRepository.items[0]?.id).toEqual(
+        result.value?.answerComment.id,
+      )
+    }
   })
 })

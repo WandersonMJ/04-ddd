@@ -4,6 +4,7 @@
         "plugin:vitest-globals/recommended"
     ],
     "rules": {
-        "no-useless-constructor": "off"
+        "no-useless-constructor": "off",
+        "@typescript-eslint/no-explicit-any": "warn"
     }
 }

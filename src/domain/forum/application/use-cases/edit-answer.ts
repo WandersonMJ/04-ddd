@@ -1,5 +1,8 @@
+import { left, right, type Either } from '@/core/either.ts'
 import type { Answer } from '../../enterprise/entities/answer.ts'
 import type { AnswersRepository } from '../repositories/answers-repository.ts'
+import { NotAllowedError } from './errors/not-allowed-error.ts'
+import { ResourceNotFoundError } from './errors/resource-not-found-error.ts'
 
 interface EditAnswerUseCaseRequest {
   authorId: string
@@ -7,9 +10,12 @@ interface EditAnswerUseCaseRequest {
   content: string
 }
 
-interface EditAnswerUseCaseResponse {
-  answer: Answer
-}
+type EditAnswerUseCaseResponse = Either<
+  NotAllowedError | ResourceNotFoundError,
+  {
+    answer: Answer
+  }
+>
 
 export class EditAnswerUseCase {
   constructor(private answerRepository: AnswersRepository) {}
@@ -22,19 +28,19 @@ export class EditAnswerUseCase {
     const answer = await this.answerRepository.findById(answerId)
 
     if (!answer) {
-      throw new Error('answer does not exists')
+      return left(new ResourceNotFoundError())
     }
 
     if (authorId !== answer.authorId.toString()) {
-      throw new Error('user not authorized')
+      return left(new NotAllowedError())
     }
 
     answer.content = content
 
     await this.answerRepository.save(answer)
 
-    return {
+    return right({
       answer,
-    }
+    })
   }
 }

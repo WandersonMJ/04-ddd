@@ -3,11 +3,16 @@ import type { Answer } from '../../enterprise/entities/answer.ts'
 import type { AnswersRepository } from '../repositories/answers-repository.ts'
 import { NotAllowedError } from './errors/not-allowed-error.ts'
 import { ResourceNotFoundError } from './errors/resource-not-found-error.ts'
+import { AnswerAttachmentList } from '../../enterprise/entities/answer-attachment-list.ts'
+import type { AnswerAttachmentsRepository } from '../repositories/answers-attachments-repository.ts'
+import { AnswerAttachment } from '../../enterprise/entities/answer-attachment.ts'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id.ts'
 
 interface EditAnswerUseCaseRequest {
   authorId: string
   answerId: string
   content: string
+  attachmentsIds: string[]
 }
 
 type EditAnswerUseCaseResponse = Either<
@@ -18,12 +23,16 @@ type EditAnswerUseCaseResponse = Either<
 >
 
 export class EditAnswerUseCase {
-  constructor(private answerRepository: AnswersRepository) {}
+  constructor(
+    private answerAttachmentsRepository: AnswerAttachmentsRepository,
+    private answerRepository: AnswersRepository,
+  ) {}
 
   async execute({
     authorId,
     answerId,
     content,
+    attachmentsIds,
   }: EditAnswerUseCaseRequest): Promise<EditAnswerUseCaseResponse> {
     const answer = await this.answerRepository.findById(answerId)
 
@@ -34,7 +43,23 @@ export class EditAnswerUseCase {
     if (authorId !== answer.authorId.toString()) {
       return left(new NotAllowedError())
     }
+    const currentAnswerAttachments =
+      await this.answerAttachmentsRepository.findManyByAnswerId(answerId)
 
+    const answerAttachmentList = new AnswerAttachmentList(
+      currentAnswerAttachments,
+    )
+
+    const answerAttachments = attachmentsIds.map((attachmentId) => {
+      return AnswerAttachment.create({
+        attachmentId: new UniqueEntityID(attachmentId),
+        answerId: answer.id,
+      })
+    })
+
+    answerAttachmentList.update(answerAttachments)
+
+    answer.attachments = answerAttachmentList
     answer.content = content
 
     await this.answerRepository.save(answer)

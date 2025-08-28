@@ -2,7 +2,7 @@ import { DeleteQuestionUseCase } from '../delete-question.ts'
 import { InMemoryQuestionsRepository } from 'test/respositories/in-memory-questions-repository.ts'
 import { makeQuestion } from 'test/factories/make-question.ts'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id.ts'
-import { NotAllowedError } from '../errors/not-allowed-error.ts'
+import { NotAllowedError } from '@/core/errors/errors/not-allowed-error.ts'
 import { InMemoryQuestionAttachmentsRepository } from 'test/respositories/in-memory-question-attachments-repository.ts'
 import { makeQuestionAttachment } from 'test/factories/make-question-attachment.ts'
 

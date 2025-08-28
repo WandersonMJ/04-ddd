@@ -1,7 +1,7 @@
 import { left, right, type Either } from '@/core/either.ts'
 import { Question } from '../../enterprise/entities/question.ts'
 import type { QuestionsRepository } from '../repositories/questions-repository.ts'
-import { ResourceNotFoundError } from './errors/resource-not-found-error.ts'
+import { ResourceNotFoundError } from '@/core/errors/errors/resource-not-found-error.ts'
 
 interface GetQuestionBySlugUseCaseRequest {
   slug: string

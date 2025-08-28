@@ -2,8 +2,8 @@ import { left, right, type Either } from '@/core/either.ts'
 import type { Question } from '../../enterprise/entities/question.ts'
 import type { AnswersRepository } from '../repositories/answers-repository.ts'
 import type { QuestionsRepository } from '../repositories/questions-repository.ts'
-import { NotAllowedError } from './errors/not-allowed-error.ts'
-import { ResourceNotFoundError } from './errors/resource-not-found-error.ts'
+import { NotAllowedError } from '@/core/errors/errors/not-allowed-error.ts'
+import { ResourceNotFoundError } from '@/core/errors/errors/resource-not-found-error.ts'
 
 interface ChooseQuestionBestAnswerUseCaseRequest {
   authorId: string

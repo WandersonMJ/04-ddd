@@ -1,7 +1,7 @@
 import { left, right, type Either } from '@/core/either.ts'
 import type { AnswersRepository } from '../repositories/answers-repository.ts'
-import { ResourceNotFoundError } from './errors/resource-not-found-error.ts'
-import { NotAllowedError } from './errors/not-allowed-error.ts'
+import { ResourceNotFoundError } from '@/core/errors/errors/resource-not-found-error.ts'
+import { NotAllowedError } from '@/core/errors/errors/not-allowed-error.ts'
 
 interface DeleteAnswerUseCaseRequest {
   authorId: string

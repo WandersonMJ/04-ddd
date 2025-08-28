@@ -2,7 +2,7 @@ import { DeleteAnswerUseCase } from '../delete-answer.ts'
 import { InMemoryAnswersRepository } from 'test/respositories/in-memory-answers-repository.ts'
 import { makeAnswer } from 'test/factories/make-answer.ts'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id.ts'
-import { NotAllowedError } from '../errors/not-allowed-error.ts'
+import { NotAllowedError } from '@/core/errors/errors/not-allowed-error.ts'
 import { makeAnswerAttachment } from 'test/factories/make-answer-attachment.ts'
 import { InMemoryAnswerAttachmentsRepository } from 'test/respositories/in-memory-answer-attachments-repository.ts'
 

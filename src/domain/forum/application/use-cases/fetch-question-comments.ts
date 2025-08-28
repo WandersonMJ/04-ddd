@@ -2,7 +2,7 @@ import { left, right, type Either } from '@/core/either.ts'
 import type { QuestionComment } from '../../enterprise/entities/question-comment.ts'
 import type { QuestionCommentsRepository } from '../repositories/questions-comments-repository.ts'
 import type { QuestionsRepository } from '../repositories/questions-repository.ts'
-import { ResourceNotFoundError } from './errors/resource-not-found-error.ts'
+import { ResourceNotFoundError } from '@/core/errors/errors/resource-not-found-error.ts'
 
 interface FetchQuestionsCommentsUseCaseRequest {
   questionId: string
